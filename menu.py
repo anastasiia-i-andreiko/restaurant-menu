@@ -2,17 +2,19 @@ dishes = []
 CATEGORIES = ["Перші страви", "Другі страви", "Салати", "Десерти", "Напої", "Інше"]
 
 def show_menu():
-    print("\n╔══════════════════════════════╗")
-    print("║       МЕНЮ РЕСТОРАНУ         ║")
-    print("╠══════════════════════════════╣")
-    print("║ 1. Додати страву             ║")
-    print("║ 2. Редагувати страву         ║")
-    print("║ 3. Видалити страву           ║")
-    print("║ 4. Показати загальну ціну    ║")
-    print("║ 5. Показати всі страви       ║")
-    print("║ 6. Показати страви по катег. ║")
-    print("║ 0. Вийти                     ║")
-    print("╚══════════════════════════════╝")
+    print("\n╔════════════════════════════════╗")
+    print("║       🍽  МЕНЮ РЕСТОРАНУ        ║")
+    print("╠════════════════════════════════╣")
+    print("║  1. Додати страву              ║")
+    print("║  2. Редагувати страву          ║")
+    print("║  3. Видалити страву            ║")
+    print("║  4. Загальна ціна              ║")
+    print("║  5. Показати всі страви        ║")
+    print("║  6. Страви по категоріях       ║")
+    print("║  7. Ціна по категорії          ║")
+    print("║  8. Сортування за ціною        ║")
+    print("║  0. Вийти                      ║")
+    print("╚════════════════════════════════╝")
 
 def add_dish():
     print("\n--- Додавання страви ---")
@@ -96,13 +98,12 @@ def edit_dish():
 
 def delete_dish():
     if not dishes:
-        print("\nМеню порожнє — нічого видаляти.")
+        print("\nМеню порожнє - нічого видаляти.")
         return
     print("\n--- Видалення страви ---")
     print("  1. Видалити за назвою")
     print("  2. Видалити всі страви за категорією")
     del_choice = input("Оберіть: ").strip()
-
     if del_choice == "1":
         name = input("Назва страви для видалення: ").strip()
         dish = find_dish_by_name(name)
@@ -112,55 +113,49 @@ def delete_dish():
         confirm = input(f"Видалити '{dish['name']}'? (так/ні): ").strip().lower()
         if confirm == "так":
             dishes.remove(dish)
-            print(f"✓ Страву '{name}' видалено.")
-            print(f"Залишилось страв у меню: {len(dishes)}")
+            print(f"✓ Страву '{name}' видалено. Залишилось: {len(dishes)}")
         else:
             print("Видалення скасовано.")
-
     elif del_choice == "2":
         print("\nКатегорії:")
         for i, cat in enumerate(CATEGORIES, 1):
             print(f"  {i}. {cat}")
         while True:
             try:
-                cat_choice = int(input("Оберіть категорію для видалення: "))
+                cat_choice = int(input("Оберіть категорію: "))
                 if 1 <= cat_choice <= len(CATEGORIES):
                     category = CATEGORIES[cat_choice - 1]
                     break
-                else:
-                    print("Невірний номер.")
             except ValueError:
-                print("Введіть число.")
+                pass
         to_delete = [d for d in dishes if d.get("category") == category]
         if not to_delete:
             print(f"У категорії '{category}' немає страв.")
             return
-        confirm = input(f"Видалити {len(to_delete)} страв(и) з '{category}'? (так/ні): ").strip().lower()
+        confirm = input(f"Видалити {len(to_delete)} страв(и)? (так/ні): ").strip().lower()
         if confirm == "так":
             for d in to_delete:
                 dishes.remove(d)
-            print(f"✓ Видалено {len(to_delete)} страв(и).")
-            print(f"Залишилось страв у меню: {len(dishes)}")
+            print(f"✓ Видалено. Залишилось: {len(dishes)}")
         else:
-            print("Видалення скасовано.")
-    else:
-        print("Невірний вибір.")
+            print("Скасовано.")
 
-def show_dishes():
-    if not dishes:
-        print("\nМеню порожнє.")
+def show_dishes(dish_list=None, title="СПИСОК СТРАВ"):
+    data = dish_list if dish_list is not None else dishes
+    if not data:
+        print("\nСписок порожній.")
         return
-    print(f"\n--- СПИСОК СТРАВ (усього: {len(dishes)}) ---")
-    print("┌──────┬──────────────────┬──────────────┬───────────┬───────────┐")
-    print("│  №   │ Назва            │ Опис         │ Ціна, грн │ Категорія │")
-    print("├──────┼──────────────────┼──────────────┼───────────┼───────────┤")
-    for i, dish in enumerate(dishes, 1):
-        name = dish["name"][:16].ljust(16)
-        desc = dish["description"][:12].ljust(12)
+    print(f"\n--- {title} (усього: {len(data)}) ---")
+    print("┌──────┬────────────────────┬──────────────────┬───────────┬──────────────┐")
+    print("│  №   │ Назва              │ Опис             │ Ціна, грн │ Категорія    │")
+    print("├──────┼────────────────────┼──────────────────┼───────────┼──────────────┤")
+    for i, dish in enumerate(data, 1):
+        name = dish["name"][:18].ljust(18)
+        desc = dish["description"][:16].ljust(16)
         price = f"{dish['price']:.2f}".rjust(9)
-        cat = dish.get("category", "—")[:9].ljust(9)
+        cat = dish.get("category", "—")[:12].ljust(12)
         print(f"│ {str(i).ljust(4)} │ {name} │ {desc} │ {price} │ {cat} │")
-    print("└──────┴──────────────────┴──────────────┴───────────┴───────────┘")
+    print("└──────┴────────────────────┴──────────────────┴───────────┴──────────────┘")
 
 def show_by_category():
     if not dishes:
@@ -172,74 +167,69 @@ def show_by_category():
         cat_dishes = [d for d in dishes if d.get("category", "Інше") == cat]
         print(f"\n  [{cat}] ({len(cat_dishes)} шт.)")
         for d in cat_dishes:
-            print(f"    • {d['name']} — {d['price']:.2f} грн  ({d['description']})")
+            print(f"    • {d['name']:<20} {d['price']:>8.2f} грн   {d['description']}")
 
-def add_dish():
-    print("\n--- Додавання страви ---")
-    name = input("Назва страви: ").strip()
-    if not name:
-        print("Помилка: назва не може бути порожньою.")
-        return
-
-    description = input("Опис страви: ").strip()
-
-    while True:
-        try:
-            price = float(input("Ціна (грн): "))
-            if price < 0:
-                print("Помилка: ціна не може бути від'ємною.")
-            else:
-                break
-        except ValueError:
-            print("Помилка: введіть числове значення.")
-
-    dish = {"name": name, "description": description, "price": price}
-    dishes.append(dish)
-    print(f"✓ Страву '{name}' успішно додано!")
-
-def show_dishes():
+def total_price():
     if not dishes:
-        print("\nМеню порожнє. Додайте страви.")
+        print("\nМеню порожнє.")
         return
-    print("\n┌─────────────────────────────────────────────────────┐")
-    print("│                  СПИСОК СТРАВ                      │")
-    print("├──────┬──────────────────┬──────────────┬───────────┤")
-    print("│  №   │ Назва            │ Опис         │ Ціна, грн │")
-    print("├──────┼──────────────────┼──────────────┼───────────┤")
-    for i, dish in enumerate(dishes, 1):
-        name = dish["name"][:16].ljust(16)
-        desc = dish["description"][:12].ljust(12)
-        price = f"{dish['price']:.2f}".rjust(9)
-        print(f"│ {str(i).ljust(4)} │ {name} │ {desc} │ {price} │")
-    print("└──────┴──────────────────┴──────────────┴───────────┘")
+    total = sum(d["price"] for d in dishes)
+    print(f"\n💰 Загальна вартість: {total:.2f} грн")
+    print(f"   Кількість страв:   {len(dishes)}")
+    print(f"   Середня ціна:      {total / len(dishes):.2f} грн")
+
+def price_by_category():
+    if not dishes:
+        print("\nМеню порожнє.")
+        return
+    all_cats = sorted(set(d.get("category", "Інше") for d in dishes))
+    print("\n--- ЦІНА ПО КАТЕГОРІЯХ ---")
+    grand_total = 0
+    for cat in all_cats:
+        cat_dishes = [d for d in dishes if d.get("category", "Інше") == cat]
+        cat_total = sum(d["price"] for d in cat_dishes)
+        grand_total += cat_total
+        print(f"  {cat:<20} {len(cat_dishes):>3} шт.  →  {cat_total:>9.2f} грн")
+    print(f"  {'ВСЬОГО':<20} {len(dishes):>3} шт.  →  {grand_total:>9.2f} грн")
+
+def sort_by_price():
+    if not dishes:
+        print("\nМеню порожнє.")
+        return
+    print("\n--- Сортування за ціною ---")
+    print("  1. Від дешевих до дорогих")
+    print("  2. Від дорогих до дешевих")
+    sort_choice = input("Оберіть: ").strip()
+    if sort_choice == "1":
+        show_dishes(sorted(dishes, key=lambda d: d["price"]), "від дешевих до дорогих")
+    elif sort_choice == "2":
+        show_dishes(sorted(dishes, key=lambda d: d["price"], reverse=True), "від дорогих до дешевих")
+    else:
+        print("Невірний вибір.")
 
 def main():
+    print("Ласкаво просимо!")
     while True:
         show_menu()
         choice = input("Оберіть дію: ").strip()
         if choice == "1":
             add_dish()
         elif choice == "2":
-feature/A-add-dish
-            print("[Редагування страви - у розробці]")
-        elif choice == "3":
-            print("[Видалення страви - у розробці]")
-
             edit_dish()
         elif choice == "3":
             delete_dish()
-dev
         elif choice == "4":
-            print("[Загальна ціна - у розробці]")
+            total_price()
         elif choice == "5":
             show_dishes()
-feature/A-add-dish
-
         elif choice == "6":
             show_by_category()
-dev
+        elif choice == "7":
+            price_by_category()
+        elif choice == "8":
+            sort_by_price()
         elif choice == "0":
-            print("До побачення!")
+            print("\nДо побачення!")
             break
         else:
             print("Невірний вибір.")
