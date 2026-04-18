@@ -174,6 +174,45 @@ def show_by_category():
         for d in cat_dishes:
             print(f"    • {d['name']} — {d['price']:.2f} грн  ({d['description']})")
 
+def add_dish():
+    print("\n--- Додавання страви ---")
+    name = input("Назва страви: ").strip()
+    if not name:
+        print("Помилка: назва не може бути порожньою.")
+        return
+
+    description = input("Опис страви: ").strip()
+
+    while True:
+        try:
+            price = float(input("Ціна (грн): "))
+            if price < 0:
+                print("Помилка: ціна не може бути від'ємною.")
+            else:
+                break
+        except ValueError:
+            print("Помилка: введіть числове значення.")
+
+    dish = {"name": name, "description": description, "price": price}
+    dishes.append(dish)
+    print(f"✓ Страву '{name}' успішно додано!")
+
+def show_dishes():
+    if not dishes:
+        print("\nМеню порожнє. Додайте страви.")
+        return
+    print("\n┌─────────────────────────────────────────────────────┐")
+    print("│                  СПИСОК СТРАВ                      │")
+    print("├──────┬──────────────────┬──────────────┬───────────┤")
+    print("│  №   │ Назва            │ Опис         │ Ціна, грн │")
+    print("├──────┼──────────────────┼──────────────┼───────────┤")
+    for i, dish in enumerate(dishes, 1):
+        name = dish["name"][:16].ljust(16)
+        desc = dish["description"][:12].ljust(12)
+        price = f"{dish['price']:.2f}".rjust(9)
+        print(f"│ {str(i).ljust(4)} │ {name} │ {desc} │ {price} │")
+    print("└──────┴──────────────────┴──────────────┴───────────┘")
+
 def main():
     while True:
         show_menu()
@@ -181,15 +220,24 @@ def main():
         if choice == "1":
             add_dish()
         elif choice == "2":
+feature/A-add-dish
+            print("[Редагування страви - у розробці]")
+        elif choice == "3":
+            print("[Видалення страви - у розробці]")
+
             edit_dish()
         elif choice == "3":
             delete_dish()
+dev
         elif choice == "4":
             print("[Загальна ціна - у розробці]")
         elif choice == "5":
             show_dishes()
+feature/A-add-dish
+
         elif choice == "6":
             show_by_category()
+dev
         elif choice == "0":
             print("До побачення!")
             break
